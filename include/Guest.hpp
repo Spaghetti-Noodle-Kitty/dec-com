@@ -4,10 +4,12 @@
 #include <stdio.h>
 #include <iostream>
 #include "Packet.hpp"
+#include "Serial.hpp"
 
 class Guest {
 public:
     static bool RunCommand(char* Com, char*& Out);
+    static void SendResponse(Packet* RespPacket);
 
 private:
     static Packet& BuildResponse(char* Msg, bool Code);
@@ -45,4 +47,15 @@ Packet& Guest::BuildResponse(char* Msg, bool Code){
     
     Packet* P = new Packet(Msg);
     return *P;
+}
+
+
+/// @brief Sends the response back to Host using initialized TTY
+/// @param ResponsePacket Packet containing the response to the Host
+void Guest::SendResponse(Packet* ResponsePacket){
+    uint_8t* resp = ResponsePacket->Serialize();
+
+    int* ref = Serial::InitTTY();
+    Serial::SendPacket(*ref);
+
 }

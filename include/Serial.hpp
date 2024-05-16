@@ -47,5 +47,5 @@ int* Serial::InitTTY(char* TTYPath = nullptr) {
 /// @param TTYRef intptr to previously initialized TTY
 /// @return true if packet has been sent, false if packet sending failed
 bool Serial::SendPacket(int& TTYRef) {
-
+    
 }
