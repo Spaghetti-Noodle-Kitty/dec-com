@@ -1,17 +1,33 @@
 #pragma once
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
 #include "Packet.hpp"
 
 class Guest {
 public:
-    static bool RunCommand(char* Com, char& Out);
+    static bool RunCommand(char* Com, char*& Out);
 
 private:
     static Packet& BuildResponse(char* Msg, bool Code);
 };
 
-bool Guest::RunCommand(char* Com, char& Out){
-    
+/// @brief Runs the passed command on the linux shell
+/// @param Com Command parameter
+/// @param Out Reference to a char-array for output
+/// @return Was command ran?
+bool Guest::RunCommand(char* Com, char*& Out){
+    FILE* pipe = popen(Com, "r");
+    if(!pipe) return false;
+
+    char Buff[128];
+    while(!feof(pipe)){
+        if(fgets(Buff, 128, pipe) != nullptr)
+            strncat(Out, Buff, strlen(Out));
+    }
+    pclose(pipe);
+    return true;
 }
 
 /// @brief Builds a response Packet with format (Status) (Output)
